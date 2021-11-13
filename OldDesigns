@@ -112,3 +112,30 @@ def Constant(*types):
 		return nullInstance
 	if len(types)==0: return TypedConstant
 	return lambda cls: TypedConstant(cls, *types)
+
+
+		
+# def Constant(*types, getGeneric = False):
+# 	def TypedConstant(CallCls, *TypeCases, default=ConstantType):
+# 		nullInstance = None
+# 		lambdaIdentity = lambda *args, **kwargs: nullInstance
+# 		lambdaException = lambda ExceptionMessage: lambda *args, **kwargs: exec("raise(TypeError('"+ExceptionMessage+"'))")
+# 		class IterType(type):
+# 			def __new__(self,name,bases,attrs,**kwargs): return super().__new__(self,name,bases,attrs,**kwargs)
+# 			def __iter__(cls): return iter([TypeCases[0] if len(TypeCases) != 0 else default,])
+# 			def __next__(self): raise StopIteration
+# 			def __eq__(to,compare): return isinstance(compare,(type(to), *TypeCases)) or compare is default
+# 			def __ne__(to,compare): return not (isinstance(compare,(type(to), *TypeCases)) or compare is default)
+# 		class NonInheritable(CallCls):
+# 			__init__ = lambdaIdentity
+# 			__new__ = lambdaIdentity
+# 			__call__ = lambdaIdentity
+# 			__init_subclass__ = lambdaIdentity
+# 		nullInstance = IterType(CallCls.__name__, (NonInheritable, CallCls, default), {})
+# 		nullInstance.__init_subclass__ = lambdaException(f'The parent class "{CallCls.__name__}" does not support inheritance!')
+# 		IterType.__setattr__ = lambdaException(f'The parent class "{CallCls.__name__}" does not support assignment!')
+# 		IterType.__getattr__ = lambdaException(f'The parent class "{CallCls.__name__}" does not allow attribute access!')
+# 		return nullInstance
+# 	if getGeneric: return 
+# 	if len(types)==0: return TypedConstant
+# 	return lambda cls: TypedConstant(cls, *types)
