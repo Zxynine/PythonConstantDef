@@ -4,7 +4,8 @@ def Constant(*types):
 	def TypedConstant(CallCls, *TypeCases):
 		nullInstance = None
 		class IterType(type):
-			def __iter__(cls): return iter([cls,])
+			def __iter__(cls): return iter([None,])
+			def __next__(self): raise StopIteration
 			def __eq__(null,compare): return isinstance(compare,(type(null), *TypeCases))
 			def __ne__(null,compare): return not isinstance(compare,(type(null), *TypeCases))
 		lambdaIdentity = lambda *args, **kwargs: nullInstance
@@ -31,102 +32,77 @@ EmptyTypes = (type(None), type(Null))
 
 
 
-
 if __name__ == '__main__':
 	"""
-	====================
-	::Typed Tests::
-	====================
-
 	===== Repeat access and calls =====
-	<class '__main__.TypedNull'> <class '__main__.TypedNull'>
-	<class '__main__.TypedNull'> <class '__main__.TypedNull'>
-	<class '__main__.TypedNull'> <class '__main__.TypedNull'>
+	<class '__main__.TypedNull'> <class '__main__.TypedNull'>		<class '__main__.UnTypedNull'> <class '__main__.UnTypedNull'>
+	<class '__main__.TypedNull'> <class '__main__.TypedNull'>		<class '__main__.UnTypedNull'> <class '__main__.UnTypedNull'>
+	<class '__main__.TypedNull'> <class '__main__.TypedNull'>		<class '__main__.UnTypedNull'> <class '__main__.UnTypedNull'>
 
 	===== Iteration =====
-	<class '__main__.TypedNull'>
+	None
+	None
 
 	===== Own-Type equality =====
-	True False
-	True False
+	True False		True False
+	True False		True False
 
 	===== None-Type equality =====
-	True False
-	True False
-	True False
+	True False		False True
+	True False		False True
+	True False		False True
 
 	===== Wrong-Type equality =====
-	False False
+	False False		False False
 
 	===== Non-Keyword access Blocking =====
 	Caught Inheritance Exception
 	Caught Assignment Exception
 	Caught Attribute Access Exception
-
-
-	====================
-	::UnTyped Tests::
-	====================
-
-	===== Repeat access and calls =====
-	<class '__main__.UnTypedNull'> <class '__main__.UnTypedNull'>
-	<class '__main__.UnTypedNull'> <class '__main__.UnTypedNull'>
-	<class '__main__.UnTypedNull'> <class '__main__.UnTypedNull'>
-
-	===== Iteration =====
-	<class '__main__.UnTypedNull'>
-
-	===== Own-Type equality =====
-	True False
-	True False
-
-	===== None-Type equality =====
-	False True
-	False True
-	False True
-
-	===== Wrong-Type equality =====
-	False False
-
-	===== Non-Keyword access Blocking =====
 	Caught Inheritance Exception
 	Caught Assignment Exception
 	Caught Attribute Access Exception
 
-
-	====================
-	::Different Constants Equality::
-	====================
+	===== ::Different Constants Equality:: =====
 	False
 
-	[Done] exited with code=0 in 0.081 seconds
+	[Done] exited with code=0 in 0.097 seconds
 	"""
 	def printHeader(headName): print('\n' + '='*5 + ' ' + str(headName) + ' ' + '='*5)
+	def printGroups(typL,typR,utypL,utypR): print(str(typL)+' '+str(typR)+('\t'*2)+str(utypL)+' '+str(utypR))
+
 	@Constant()
 	class UnTypedNull:pass
 	
 	@Constant(type(None))
 	class TypedNull:pass
 
-	print('='*20)
-	print('::Typed Tests::')
-	print('='*20)
-	N0, N1 = TypedNull(), TypedNull
+	def FlattenIterables(items):
+		if not isinstance(items, Iterable):  yield [items,]
+		for x in items:
+			if isinstance(items, Iterable):
+				yield from FlattenIterables(x)
+			else: yield x
+
+	TN0, TN1 = TypedNull(), TypedNull
+	UN0, UN1 = UnTypedNull(), UnTypedNull
 	printHeader('Repeat access and calls')
-	print(N0,N1)
-	print(TypedNull,TypedNull)
-	print(TypedNull(),TypedNull())
+	printGroups(TN0,TN1,UN0,UN1)
+	printGroups(TypedNull,TypedNull,UnTypedNull,UnTypedNull)
+	printGroups(TypedNull(),TypedNull(),UnTypedNull(),UnTypedNull())
 	printHeader('Iteration')
 	for i in TypedNull(): print(i)
+	for i in UnTypedNull(): print(i)
+	# print(list(FlattenIterables([TypedNull,UnTypedNull])))
 	printHeader('Own-Type equality')
-	print(TypedNull == TypedNull, TypedNull != TypedNull)
-	print(TypedNull == TypedNull(), TypedNull() != TypedNull)
+	printGroups(TypedNull == TypedNull, TypedNull != TypedNull, UnTypedNull == UnTypedNull, UnTypedNull != UnTypedNull)
+	printGroups(TypedNull == TypedNull(), TypedNull() != TypedNull, UnTypedNull == UnTypedNull(), UnTypedNull() != UnTypedNull)
 	printHeader('None-Type equality')
-	print(TypedNull == None, TypedNull != None)
-	print(None == TypedNull, None != TypedNull)
-	print(TypedNull() == None, TypedNull() != None)
+	printGroups(TypedNull == None, TypedNull != None, UnTypedNull == None, UnTypedNull != None)
+	printGroups(None == TypedNull, None != TypedNull, None == UnTypedNull, None != UnTypedNull)
+	printGroups(TypedNull() == None, TypedNull() != None, UnTypedNull() == None, UnTypedNull() != None)
 	printHeader('Wrong-Type equality')
-	print(TypedNull == object, TypedNull == type)
+	printGroups(TypedNull == object, TypedNull == type, UnTypedNull == object, UnTypedNull == type)
 	printHeader('Non-Keyword access Blocking')
 	try: type('Inherit', (TypedNull,),{})
 	except TypeError: print('Caught Inheritance Exception')
@@ -134,33 +110,11 @@ if __name__ == '__main__':
 	except TypeError: print('Caught Assignment Exception')
 	try: TypedNull.N
 	except TypeError: print('Caught Attribute Access Exception')
-	print('\n\n' + '='*20)
-	print('::UnTyped Tests::')
-	print('='*20)
-	N0, N1 = UnTypedNull(), UnTypedNull
-	printHeader('Repeat access and calls')
-	print(N0,N1)
-	print(UnTypedNull,UnTypedNull)
-	print(UnTypedNull(),UnTypedNull())
-	printHeader('Iteration')
-	for i in UnTypedNull(): print(i)
-	printHeader('Own-Type equality')
-	print(UnTypedNull == UnTypedNull, UnTypedNull != UnTypedNull)
-	print(UnTypedNull == UnTypedNull(), UnTypedNull() != UnTypedNull)
-	printHeader('None-Type equality')
-	print(UnTypedNull == None, UnTypedNull != None)
-	print(None == UnTypedNull, None != UnTypedNull)
-	print(UnTypedNull() == None, UnTypedNull() != None)
-	printHeader('Wrong-Type equality')
-	print(UnTypedNull == object, UnTypedNull == type)
-	printHeader('Non-Keyword access Blocking')
 	try: type('Inherit', (UnTypedNull,),{})
 	except TypeError: print('Caught Inheritance Exception')
 	try: UnTypedNull.N = None
 	except TypeError: print('Caught Assignment Exception')
 	try: UnTypedNull.N
 	except TypeError: print('Caught Attribute Access Exception')
-	print('\n\n' + '='*20)
-	print('::Different Constants Equality::')
-	print('='*20)
+	printHeader('::Different Constants Equality::')
 	print(UnTypedNull == TypedNull)
