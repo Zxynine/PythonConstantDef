@@ -1,4 +1,142 @@
 
+
+# def CallableSingleton(CallCls):
+# 	global EmptyTypes
+# 	nullInstance = None
+# 	ClsNew = CallCls.__new__
+# 	def __new__(cls, *args, **kwargs):
+# 		nonlocal nullInstance
+# 		if nullInstance is None:
+# 			nullInstance = ClsNew(cls, *args, **kwargs)
+# 			return nullInstance
+# 	def __call__(*args, **kwargs):
+# 		nonlocal nullInstance
+# 		return nullInstance
+# 	def __eq__(null, other): return isinstance(other, EmptyTypes)
+# 	def __ne__(null, other): return not isinstance(other, EmptyTypes)
+# 	def __iter__(self): return iter([self,])
+# 	if ClsNew is __new__ : return nullInstance
+# 	CallCls.__new__ = __new__
+# 	CallCls.__call__ = __call__
+# 	CallCls.__iter__ = __iter__
+# 	CallCls.__eq__ = __eq__
+# 	CallCls.__ne__ = __ne__
+# 	return CallCls()
+
+
+
+def CallableSingleton(CallCls):
+	global EmptyTypes
+	nullInstance = None
+	ClsNew = CallCls.__new__
+	ClsName = CallCls.__name__
+
+	class Singleton:
+		def __new__(cls, *args, **kwargs):
+			nonlocal nullInstance, CallCls
+			if nullInstance is None:
+				nullInstance = ClsNew(CallCls, *args, **kwargs)
+				nullInstance.__dict__.update(Singleton.__dict__)
+			return nullInstance
+
+		def __call__(*args, **kwargs):
+			nonlocal nullInstance
+			return nullInstance
+		def __eq__(null, other): return isinstance(other, EmptyTypes)
+		def __ne__(null, other): return not isinstance(other, EmptyTypes)
+		def __iter__(self): return iter([self,])
+	Singleton()
+	
+	print(nullInstance)
+	return nullInstance()
+
+
+
+
+
+
+# def CallableSingleton(CallCls):
+# 	global EmptyTypes
+# 	nullInstance = None
+# 	ClsNew = CallCls.__new__
+# 	def __new__(cls, *args, **kwargs):
+# 		nonlocal nullInstance
+# 		if nullInstance is None:
+# 			nullInstance = ClsNew(cls, *args, **kwargs)
+# 			nullInstance.__instantiatedSingleton = True
+# 		return nullInstance
+# 	def __call__(*args, **kwargs):
+# 		nonlocal nullInstance
+# 		return nullInstance
+# 	def __eq__(null, other): return isinstance(other, EmptyTypes)
+# 	def __ne__(null, other): return not isinstance(other, EmptyTypes)
+# 	def __iter__(self): return iter([self,])
+
+# 	CallCls.__new__ = __new__
+# 	CallCls.__call__ = __call__
+# 	CallCls.__iter__ = __iter__
+# 	CallCls.__eq__ = __eq__
+# 	CallCls.__ne__ = __ne__
+# 	return CallCls()
+
+@CallableSingleton
+class Null:pass
+
+EmptyTypes = (type(None), type(Null))
+
+if __name__ == '__main__':
+	def printHeader(headName):
+		print('\n' + '='*5 + ' ' + str(headName) + ' ' + '='*5)
+
+	printHeader('Repeat access and calls')
+	print(Null)
+	print(Null)
+	print(Null())
+	print(Null())
+	printHeader('Iteration')
+	for i in Null(): print(i)
+	printHeader('Own-Type equality')
+	print(Null == Null)
+	print(Null != Null)
+	print(Null == Null())
+	print(Null() != Null)
+	printHeader('None-Type equality')
+	print(Null == None)
+	print(Null != None)
+	print(Null() == None)
+	print(Null() != None)
+	printHeader('None-Type reversed equality')
+	print(None == Null)
+	print(None != Null)
+
+# def singleton(wrapCls):
+# 	instance = None
+# 	ClsNew = wrapCls.__new__
+# 	@wraps(wrapCls.__new__)
+# 	def __new__(cls, *args, **kwargs):
+# 		nonlocal instance
+# 		if instance is None: instance = ClsNew(cls, *args, **kwargs)
+# 		return instance
+# 	wrapCls.__new__ = __new__
+# 	return wrapCls
+
+
+
+# def singleton(class_):
+#     instances = {}
+#     def getinstance(*args, **kwargs):
+#         if class_ not in instances:
+#             instances[class_] = class_(*args, **kwargs)
+#         return instances[class_]
+#     return getinstance
+
+# @singleton
+# class MyClass(BaseClass):
+#     pass
+
+
+
+
 # def TrueStatic(CallCls):
 # 	global EmptyTypes
 # 	def __init_subclass__(self, **kwargs):
