@@ -1,0 +1,91 @@
+
+# def TrueStatic(CallCls):
+# 	global EmptyTypes
+# 	def __init_subclass__(self, **kwargs):
+# 		super(CallCls, self).__init__subclass__(**kwargs)
+# 		print('Q'*10)
+
+
+# 	CallCls.__init_subclass__ = classmethod(__init_subclass__)
+
+
+
+# 	nullInstance = CallCls()
+
+
+# 	CallCls.__new__ = lambda *args, **kwargs: nullInstance
+# 	CallCls.__call__ = lambda *args, **kwargs: nullInstance
+# 	CallCls.__eq__ = lambda null,compare:isinstance(compare,EmptyTypes)
+# 	CallCls.__ne__ = lambda null,compare: not isinstance(compare,EmptyTypes)
+# 	CallCls.__iter__ = lambda self: iter([self,])
+# 	CallCls.__init__ = lambda self, *args, **kwargs: None
+# 	return nullInstance
+
+# def TrueStatic(CallCls):
+# 	global EmptyTypes
+# 	class IterType(type):
+# 		def __iter__(cls): return iter([cls,])
+# 	class NonInheritable(CallCls, metaclass=IterType):
+# 		__init__ = lambda self, *args, **kwargs: None
+# 		__new__ = lambda *args, **kwargs: nullInstance
+# 		__call__ = lambda *args, **kwargs: nullInstance
+# 		__eq__ = lambda null,compare:isinstance(compare,EmptyTypes)
+# 		__ne__ = lambda null,compare: not isinstance(compare,EmptyTypes)
+# 		__iter__ = lambda self: iter([self,])
+# 		def __init_subclass__(self, **kwargs):
+# 			print('Qqqqqqqqqqqqq')
+# 			# super(NonInheritable, self).__init__subclass__(**kwargs)
+# 	nullInstance = type('Null', (NonInheritable, CallCls), {})
+# 	# nullInstance.__dict__ = dict(NonInheritable.__dict__)
+# 	# nullInstance.__class__ = NonInheritable
+# 	return nullInstance
+
+
+
+# def TrueStatic(CallCls):
+# 	global EmptyTypes
+# 	nullInstance = CallCls()
+# 	def __init_subclass__(self, **kwargs):
+# 			super(CallCls, self).__init__subclass__(**kwargs)
+# 			print('Q'*10)
+# 	class NonInheritable:
+# 		__init__ = lambda self, *args, **kwargs: None
+# 		__new__ = lambda *args, **kwargs: nullInstance
+# 		__call__ = lambda *args, **kwargs: nullInstance
+# 		__eq__ = lambda null,compare:isinstance(compare,EmptyTypes)
+# 		__ne__ = lambda null,compare: not isinstance(compare,EmptyTypes)
+# 		__iter__ = lambda self: iter([self,])
+# 		def __init_subclass__(self, **kwargs):
+# 			print('Qqqqqqqqqqqqq')
+# 			super(nullInstance, self).__init__subclass__(**kwargs)
+
+# 	nullInstance.__init_subclass__ = classmethod(__init_subclass__)
+
+# 	nullInstance.__new__ = lambda *args, **kwargs: nullInstance
+# 	nullInstance.__call__ = lambda *args, **kwargs: nullInstance
+# 	nullInstance.__eq__ = lambda null,compare:isinstance(compare,EmptyTypes)
+# 	nullInstance.__ne__ = lambda null,compare: not isinstance(compare,EmptyTypes)
+# 	nullInstance.__iter__ = lambda self: iter([self,])
+# 	nullInstance.__init__ = lambda self, *args, **kwargs: None
+# 	nullInstance.__class__ = NonInheritable
+# 	return nullInstance
+# def TrueStatic(CallCls):
+# 	_Declaring = True
+# 	global EmptyTypes
+# 	nullInstance = None
+# 	class IterType(type):
+# 		def __iter__(cls): return iter([cls,])
+# 		def __eq__(null,compare): return isinstance(compare,EmptyTypes)
+# 		def __ne__(null,compare): return not isinstance(compare,EmptyTypes)
+# 	lambdaIdentity = lambda *args, **kwargs: nullInstance
+# 	lambdaBlocker = lambda ExceptionMessage: lambda *args, **kwargs: exec("raise(TypeError('" + ExceptionMessage + "'))")
+# 	class NonInheritable(CallCls, metaclass=IterType):
+# 		__init__ = lambda *args, **kwargs: nullInstance
+# 		__new__ = lambda *args, **kwargs: nullInstance
+# 		__call__ = lambda *args, **kwargs: nullInstance
+# 		__init_subclass__ = lambda *args, **kwargs: nullInstance
+# 	nullInstance = type(CallCls.__name__, (NonInheritable, CallCls), {})
+# 	NonInheritable.__init_subclass__ = lambda *args:exec("raise(TypeError('The parent class does not support inheritance!'))")
+# 	IterType.__setattr__ = lambda self, name, value: exec("raise(TypeError('The parent class does not support assignment!'))")
+# 	IterType.__getattr__ = lambda self, name: exec("raise(TypeError('The parent class does not allow attribute access!'))")
+# 	return nullInstance
