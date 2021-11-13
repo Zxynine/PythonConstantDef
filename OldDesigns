@@ -89,3 +89,26 @@
 # 	IterType.__setattr__ = lambda self, name, value: exec("raise(TypeError('The parent class does not support assignment!'))")
 # 	IterType.__getattr__ = lambda self, name: exec("raise(TypeError('The parent class does not allow attribute access!'))")
 # 	return nullInstance
+
+
+def Constant(*types):
+	def TypedConstant(CallCls, *TypeCases):
+		nullInstance = None
+		class IterType(type):
+			def __iter__(cls): return iter([cls,])
+			def __eq__(null,compare): return isinstance(compare,(type(null), *TypeCases))
+			def __ne__(null,compare): return not isinstance(compare,(type(null), *TypeCases))
+		lambdaIdentity = lambda *args, **kwargs: nullInstance
+		lambdaException = lambda ExceptionMessage: lambda *args, **kwargs: exec("raise(TypeError('"+ExceptionMessage+"'))")
+		class NonInheritable(CallCls, metaclass=IterType):
+			__init__ = lambdaIdentity
+			__new__ = lambdaIdentity
+			__call__ = lambdaIdentity
+			__init_subclass__ = lambdaIdentity
+		nullInstance = type(CallCls.__name__, (NonInheritable, CallCls), {})
+		NonInheritable.__init_subclass__ = lambdaException(f'The parent class "{CallCls.__name__}" does not support inheritance!')
+		IterType.__setattr__ = lambdaException(f'The parent class "{CallCls.__name__}" does not support assignment!')
+		IterType.__getattr__ = lambdaException(f'The parent class "{CallCls.__name__}" does not allow attribute access!')
+		return nullInstance
+	if len(types)==0: return TypedConstant
+	return lambda cls: TypedConstant(cls, *types)
